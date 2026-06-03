@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Guido Spano - Pedidos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <div class="logo-slot" aria-label="Espacio para logo">
+          <span>NGS</span>
+        </div>
+        <div>
+          <p class="brand-kicker">Tienda escolar</p>
+          <h1>Nuevo Guido Spano</h1>
+        </div>
+      </div>
+      <button id="goToCartBtn" class="ghost-btn" type="button">Ver carrito</button>
+    </header>
+
+    <main class="store-shell">
+      <section class="hero">
+        <p class="hero-kicker">Compra en 3 pasos</p>
+        <h2>Elegí productos, revisá tu carrito y confirmá tu pedido</h2>
+      </section>
+
+      <div class="layout">
+        <section class="panel products-panel">
+          <div class="panel-header">
+            <h2>Productos disponibles</h2>
+            <button id="reloadProductsBtn" class="ghost-btn" type="button">Recargar</button>
+          </div>
+          <div id="productsStatus" class="status" role="status"></div>
+          <div id="productsGrid" class="products-grid" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel cart-panel" id="cartPanel">
+          <h2>Tu carrito</h2>
+          <div id="cartItems" class="cart-items"></div>
+          <div class="cart-footer">
+            <p class="cart-total">
+              Total:
+              <strong id="cartTotal">$0</strong>
+            </p>
+            <button id="reviewCartBtn" class="primary-btn" type="button">Revisar carrito y continuar</button>
+          </div>
+        </aside>
+      </div>
+
+      <section class="panel summary-panel">
+        <div class="panel-header">
+          <h2>Comprobante del pedido</h2>
+          <div class="summary-actions">
+            <button id="copySummaryBtn" class="ghost-btn" type="button" disabled>Copiar resumen</button>
+            <button id="whatsappBtn" class="ghost-btn" type="button" disabled>Enviar por WhatsApp</button>
+          </div>
+        </div>
+        <pre id="orderSummary" class="order-summary">Aun no confirmaste ningun pedido.</pre>
+      </section>
+    </main>
+
+    <div id="checkoutModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button id="closeCheckoutBtn" class="modal-close" type="button" aria-label="Cerrar ventana">
+          &times;
+        </button>
+        <div class="panel-header">
+          <h2 id="modalTitle">Resumen de compra</h2>
+          <span class="step-pill">Paso final</span>
+        </div>
+        <div id="checkoutPreview" class="checkout-preview"></div>
+        <p class="preview-total">
+          Total final:
+          <strong id="checkoutTotal">$0</strong>
+        </p>
+
+        <h3>Datos para confirmar el pedido</h3>
+        <form id="checkoutForm" novalidate>
+          <div class="form-grid">
+            <label>
+              Nombre *
+              <input id="nombre" name="nombre" type="text" required />
+            </label>
+            <label>
+              Apellido *
+              <input id="apellido" name="apellido" type="text" required />
+            </label>
+            <label>
+              Telefono *
+              <input id="telefono" name="telefono" type="tel" required />
+            </label>
+            <label>
+              Email (opcional)
+              <input id="email" name="email" type="email" />
+            </label>
+          </div>
+
+          <p id="formMessage" class="status" role="alert"></p>
+          <button id="confirmOrderBtn" class="primary-btn" type="submit">Confirmar pedido</button>
+        </form>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

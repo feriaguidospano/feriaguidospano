@@ -1,7 +1,11 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyp5jDSmeVW9DLTVqhOy9ERkMJJ1-e6tLD_ux_5fG6YNnM-NLesX2eiEUAaD7Ld2U7m/exec";
+const CATALOG_URL = "productos.json";
 const STORAGE_KEY = "ngs_carrito_v1";
+// Pegá acá la URL de tu Web App de Google Apps Script (Implementar > Aplicación web)
+const SHEETS_API_URL =
+  "https://script.google.com/macros/s/AKfycbxeoXOPbATysq5JFP4vLbNfHxJ3ry_1VJPilgzZqB0dxgtv4EmmvEPfJ2gNeEuf6dCM2g/exec";
 
 const state = {
+  catalog: null,
   products: [],
   cart: loadCart(),
   lastSummaryText: "",
@@ -10,7 +14,8 @@ const state = {
 
 const productsGrid = document.getElementById("productsGrid");
 const productsStatus = document.getElementById("productsStatus");
-const reloadProductsBtn = document.getElementById("reloadProductsBtn");
+const catalogDate = document.getElementById("catalogDate");
+const catalogNotes = document.getElementById("catalogNotes");
 
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
@@ -29,11 +34,13 @@ const confirmOrderBtn = document.getElementById("confirmOrderBtn");
 const orderSummary = document.getElementById("orderSummary");
 const copySummaryBtn = document.getElementById("copySummaryBtn");
 const whatsappBtn = document.getElementById("whatsappBtn");
+const catalogFileInput = document.getElementById("catalogFileInput");
 
 function formatCurrency(value) {
+  const moneda = state.catalog?.moneda || "ARS";
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
-    currency: "ARS",
+    currency: moneda,
     maximumFractionDigits: 0
   }).format(value || 0);
 }
@@ -69,101 +76,294 @@ function setStatus(el, msg, type = "") {
   }
 }
 
-async function fetchProducts() {
+function findProduct(nombre) {
+  return state.products.find((p) => p.nombre === nombre);
+}
+
+function getQuantityOptions(product) {
+  const options = product?.cantidad_opciones;
+  if (Array.isArray(options) && options.length) {
+    return options;
+  }
+  return [0, 1, 2, 3, 4];
+}
+
+function nextQuantity(current, options, direction) {
+  const index = options.indexOf(current);
+  if (index === -1) {
+    return direction > 0 ? options[0] : options[options.length - 1];
+  }
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= options.length) {
+    return current;
+  }
+  return options[nextIndex];
+}
+
+function applyCatalog(data) {
+  if (!data || !Array.isArray(data.productos)) {
+    throw new Error("El archivo de productos no es valido.");
+  }
+
+  state.catalog = data;
+  state.products = data.productos;
+  renderCatalogMeta();
+  renderProducts();
+  syncProductSelectors();
+  setStatus(productsStatus, `${state.products.length} productos listos.`, "success");
+}
+
+function readCatalogFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        resolve(JSON.parse(String(reader.result)));
+      } catch (_) {
+        reject(new Error("El archivo JSON no es valido."));
+      }
+    };
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
+    reader.readAsText(file, "UTF-8");
+  });
+}
+
+function promptCatalogFile() {
+  setStatus(
+    productsStatus,
+    "Selecciona productos.json (misma carpeta que index.html) para cargar la lista.",
+    "error"
+  );
+  catalogFileInput.click();
+}
+
+async function loadCatalog() {
   setStatus(productsStatus, "Cargando productos...");
   productsGrid.innerHTML = "";
-  reloadProductsBtn.disabled = true;
 
   try {
-    const response = await fetch(API_URL, { method: "GET" });
+    const response = await fetch(CATALOG_URL);
     if (!response.ok) {
       throw new Error(`Error HTTP ${response.status}`);
     }
-
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error("La respuesta de productos no es valida.");
-    }
-
-    state.products = data.filter((p) => p && p.Activo === true);
-    if (!state.products.length) {
-      setStatus(productsStatus, "No hay productos activos para mostrar.");
+    applyCatalog(await response.json());
+  } catch (error) {
+    if (location.protocol === "file:") {
+      promptCatalogFile();
       return;
     }
-
-    renderProducts();
-    setStatus(productsStatus, `Se cargaron ${state.products.length} productos.`, "success");
-  } catch (error) {
     setStatus(productsStatus, `No se pudieron cargar los productos: ${error.message}`, "error");
-  } finally {
-    reloadProductsBtn.disabled = false;
   }
+}
+
+catalogFileInput.addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+
+  try {
+    applyCatalog(await readCatalogFile(file));
+  } catch (error) {
+    setStatus(productsStatus, error.message, "error");
+  }
+});
+
+function renderCatalogMeta() {
+  const { fecha, notas_generales: notas } = state.catalog || {};
+
+  if (fecha) {
+    catalogDate.textContent = `Lista del ${fecha}`;
+  } else {
+    catalogDate.textContent = "";
+  }
+
+  catalogNotes.innerHTML = "";
+  if (!Array.isArray(notas) || !notas.length) {
+    catalogNotes.hidden = true;
+    return;
+  }
+
+  const list = document.createElement("ul");
+  notas.forEach((nota) => {
+    const item = document.createElement("li");
+    item.textContent = nota;
+    list.appendChild(item);
+  });
+
+  catalogNotes.appendChild(list);
+  catalogNotes.hidden = false;
+}
+
+function groupProductsByCategory() {
+  const groups = new Map();
+  state.products.forEach((product) => {
+    const categoria = product.categoria || "Otros";
+    if (!groups.has(categoria)) {
+      groups.set(categoria, []);
+    }
+    groups.get(categoria).push(product);
+  });
+  return groups;
 }
 
 function renderProducts() {
   productsGrid.innerHTML = "";
+  const groups = groupProductsByCategory();
 
-  state.products.forEach((product) => {
-    const card = document.createElement("article");
-    card.className = "product-card";
+  groups.forEach((products, categoria) => {
+    const section = document.createElement("section");
+    section.className = "category-block";
 
-    const category = product.Categoria ? `Categoria: ${product.Categoria}` : "Sin categoria";
+    const heading = document.createElement("h3");
+    heading.className = "category-title";
+    heading.textContent = categoria;
+    section.appendChild(heading);
 
-    card.innerHTML = `
-      <p class="product-name">${escapeHtml(product.Nombre || "Producto")}</p>
-      <p class="product-meta">${escapeHtml(category)}</p>
-      <p class="product-price">${formatCurrency(Number(product.Precio) || 0)}</p>
-    `;
+    const grid = document.createElement("div");
+    grid.className = "products-grid";
 
-    const addBtn = document.createElement("button");
-    addBtn.type = "button";
-    addBtn.className = "primary-btn";
-    addBtn.textContent = "Agregar al carrito";
-    addBtn.addEventListener("click", () => addToCart(product));
+    products.forEach((product) => {
+      grid.appendChild(createProductCard(product));
+    });
 
-    card.appendChild(addBtn);
-    productsGrid.appendChild(card);
+    section.appendChild(grid);
+    productsGrid.appendChild(section);
   });
 }
 
-function addToCart(product) {
-  const nombre = String(product.Nombre || "").trim();
+function createProductCard(product) {
+  const card = document.createElement("article");
+  card.className = "product-card";
+
+  const metaParts = [product.unidad ? `Unidad: ${product.unidad}` : null];
+  if (product.procedencia) {
+    metaParts.push(`Procedencia: ${product.procedencia}`);
+  }
+
+  const detalleHtml = product.detalle
+    ? `<p class="product-detail">${escapeHtml(product.detalle)}</p>`
+    : "";
+
+  card.innerHTML = `
+    <p class="product-name">${escapeHtml(product.nombre || "Producto")}</p>
+    <p class="product-meta">${escapeHtml(metaParts.filter(Boolean).join(" · "))}</p>
+    ${detalleHtml}
+    <p class="product-price">${formatCurrency(Number(product.precio) || 0)}</p>
+  `;
+
+  const options = getQuantityOptions(product);
+  const qtyField = document.createElement("label");
+  qtyField.className = "qty-field";
+  qtyField.innerHTML = "Cantidad ";
+
+  const qtySelect = document.createElement("select");
+  qtySelect.className = "qty-select";
+  options.forEach((qty) => {
+    const option = document.createElement("option");
+    option.value = String(qty);
+    option.textContent = String(qty);
+    qtySelect.appendChild(option);
+  });
+
+  const cartItem = state.cart[product.nombre];
+  if (cartItem) {
+    qtySelect.value = String(cartItem.cantidad);
+  }
+
+  qtyField.appendChild(qtySelect);
+
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "primary-btn";
+  addBtn.textContent = "Actualizar carrito";
+  addBtn.addEventListener("click", () => {
+    const cantidad = Number(qtySelect.value);
+    setCartQuantity(product, cantidad);
+  });
+
+  qtySelect.addEventListener("change", () => {
+    const cantidad = Number(qtySelect.value);
+    setCartQuantity(product, cantidad);
+  });
+
+  card.appendChild(qtyField);
+  card.appendChild(addBtn);
+  return card;
+}
+
+function setCartQuantity(product, cantidad) {
+  const nombre = String(product.nombre || "").trim();
   if (!nombre) return;
 
-  const precio = Number(product.Precio) || 0;
+  const precio = Number(product.precio) || 0;
+  const opciones = getQuantityOptions(product);
 
-  if (state.cart[nombre]) {
-    state.cart[nombre].cantidad += 1;
+  if (!opciones.includes(cantidad)) {
+    return;
+  }
+
+  if (cantidad <= 0) {
+    delete state.cart[nombre];
   } else {
-    state.cart[nombre] = { nombre, precio, cantidad: 1 };
+    state.cart[nombre] = {
+      nombre,
+      precio,
+      cantidad,
+      unidad: product.unidad || "",
+      categoria: product.categoria || ""
+    };
   }
 
   saveCart();
   renderCart();
+  syncProductSelectors();
+}
+
+function syncProductSelectors() {
+  state.products.forEach((product) => {
+    const cards = productsGrid.querySelectorAll(".product-card");
+    cards.forEach((card) => {
+      const nameEl = card.querySelector(".product-name");
+      if (!nameEl || nameEl.textContent !== product.nombre) return;
+      const select = card.querySelector(".qty-select");
+      if (!select) return;
+      const qty = state.cart[product.nombre]?.cantidad ?? 0;
+      if ([...select.options].some((opt) => opt.value === String(qty))) {
+        select.value = String(qty);
+      }
+    });
+  });
 }
 
 function increaseQty(name) {
-  if (!state.cart[name]) return;
-  state.cart[name].cantidad += 1;
-  saveCart();
-  renderCart();
+  const item = state.cart[name];
+  const product = findProduct(name);
+  if (!item || !product) return;
+
+  const opciones = getQuantityOptions(product);
+  const nueva = nextQuantity(item.cantidad, opciones, 1);
+  setCartQuantity(product, nueva);
 }
 
 function decreaseQty(name) {
-  if (!state.cart[name]) return;
-  state.cart[name].cantidad -= 1;
-  if (state.cart[name].cantidad <= 0) {
-    delete state.cart[name];
-  }
-  saveCart();
-  renderCart();
+  const item = state.cart[name];
+  const product = findProduct(name);
+  if (!item || !product) return;
+
+  const opciones = getQuantityOptions(product);
+  const nueva = nextQuantity(item.cantidad, opciones, -1);
+  setCartQuantity(product, nueva);
 }
 
 function removeFromCart(name) {
-  if (!state.cart[name]) return;
-  delete state.cart[name];
-  saveCart();
-  renderCart();
+  const product = findProduct(name);
+  if (!product) {
+    delete state.cart[name];
+    saveCart();
+    renderCart();
+    return;
+  }
+  setCartQuantity(product, 0);
 }
 
 function renderCart() {
@@ -183,10 +383,12 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-row";
 
+    const unidadLabel = item.unidad ? ` (${item.unidad})` : "";
+
     const left = document.createElement("div");
     left.innerHTML = `
       <p><strong>${escapeHtml(item.nombre)}</strong></p>
-      <p class="product-meta">${formatCurrency(item.precio)} x ${item.cantidad}</p>
+      <p class="product-meta">${formatCurrency(item.precio)} x ${item.cantidad}${escapeHtml(unidadLabel)}</p>
     `;
 
     const actions = document.createElement("div");
@@ -195,7 +397,7 @@ function renderCart() {
       <button class="qty-btn" type="button" aria-label="Disminuir cantidad">-</button>
       <span>${item.cantidad}</span>
       <button class="qty-btn" type="button" aria-label="Aumentar cantidad">+</button>
-      <button class="danger-btn" type="button">Eliminar</button>
+      <button class="danger-btn" type="button">Quitar</button>
     `;
 
     const [minusBtn, , plusBtn, removeBtn] = actions.children;
@@ -238,8 +440,9 @@ function renderCheckoutPreview() {
   items.forEach((item) => {
     const line = document.createElement("div");
     line.className = "checkout-line";
+    const unidad = item.unidad ? ` · ${item.unidad}` : "";
     line.innerHTML = `
-      <span>${escapeHtml(item.nombre)} x${item.cantidad}</span>
+      <span>${escapeHtml(item.nombre)} x${item.cantidad}${escapeHtml(unidad)}</span>
       <strong>${formatCurrency(item.precio * item.cantidad)}</strong>
     `;
     checkoutPreview.appendChild(line);
@@ -265,8 +468,11 @@ function validateForm({ nombre, apellido, telefono, email }) {
 function buildOrderPayload(formDataObj) {
   const productos = getCartArray().map((item) => ({
     nombre: item.nombre,
+    categoria: item.categoria || "",
     cantidad: item.cantidad,
-    precio: item.precio
+    precio: item.precio,
+    unidad: item.unidad,
+    subtotal: item.precio * item.cantidad
   }));
 
   return {
@@ -275,23 +481,82 @@ function buildOrderPayload(formDataObj) {
     telefono: formDataObj.telefono.trim(),
     email: formDataObj.email.trim(),
     productos,
-    total: getCartTotal()
+    total: getCartTotal(),
+    fecha_lista: state.catalog?.fecha || ""
   };
 }
 
-function buildSummaryText(payload, orderId = "sin ID") {
+function submitOrderToSheet(payload) {
+  if (!SHEETS_API_URL || SHEETS_API_URL.includes("TU_URL")) {
+    return Promise.reject(new Error("Falta configurar SHEETS_API_URL en script.js"));
+  }
+
+  const form = document.getElementById("sheetsForm");
+  const iframe = document.getElementById("sheetsFrame");
+  const input = document.getElementById("sheetsPayload");
+
+  if (!form || !iframe || !input) {
+    return Promise.reject(new Error("Falta el formulario de envio a Google Sheets."));
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const referencia = payload.referencia || createOrderReference();
+
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      iframe.removeEventListener("load", onLoad);
+      delete form.dataset.submitted;
+      resolve(result);
+    };
+
+    const fail = (message) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      iframe.removeEventListener("load", onLoad);
+      delete form.dataset.submitted;
+      reject(new Error(message));
+    };
+
+    const onLoad = () => {
+      if (!form.dataset.submitted) return;
+      finish({
+        ok: true,
+        id: referencia,
+        referencia
+      });
+    };
+
+    const timer = setTimeout(() => {
+      fail("Tiempo de espera agotado. Revisa la planilla por si el pedido llego igual.");
+    }, 20000);
+
+    form.action = SHEETS_API_URL;
+    input.value = JSON.stringify({ ...payload, referencia });
+    form.dataset.submitted = "1";
+    iframe.addEventListener("load", onLoad);
+    form.submit();
+  });
+}
+
+function buildSummaryText(payload, orderId = "sin referencia") {
   const lines = [
     "Pedido - Nuevo Guido Spano",
-    `ID: ${orderId}`,
+    `Referencia: ${orderId}`,
+    state.catalog?.fecha ? `Lista: ${state.catalog.fecha}` : "",
     `Cliente: ${payload.nombre} ${payload.apellido}`,
     `Telefono: ${payload.telefono}`,
     `Email: ${payload.email || "-"}`,
     "",
     "Productos:"
-  ];
+  ].filter(Boolean);
 
   payload.productos.forEach((p, i) => {
-    lines.push(`${i + 1}. ${p.nombre} x${p.cantidad} - ${formatCurrency(p.precio * p.cantidad)}`);
+    const unidad = p.unidad ? ` (${p.unidad})` : "";
+    lines.push(`${i + 1}. ${p.nombre} x${p.cantidad}${unidad} - ${formatCurrency(p.precio * p.cantidad)}`);
   });
 
   lines.push("");
@@ -301,19 +566,9 @@ function buildSummaryText(payload, orderId = "sin ID") {
   return lines.join("\n");
 }
 
-async function submitOrder(payload) {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
-
-  const text = await response.text(); // Apps Script a veces no responde bien como JSON directo
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { status: "ok", raw: text };
-  }
+function createOrderReference() {
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+  return `NGS-${stamp}`;
 }
 
 checkoutForm.addEventListener("submit", async (event) => {
@@ -330,17 +585,30 @@ checkoutForm.addEventListener("submit", async (event) => {
   }
 
   const payload = buildOrderPayload(formValues);
+  const orderId = createOrderReference();
+  const sheetPayload = {
+    referencia: orderId,
+    fecha_pedido: new Date().toISOString(),
+    ...payload
+  };
 
   try {
     confirmOrderBtn.disabled = true;
-    setStatus(formMessage, "Enviando pedido...");
+    setStatus(formMessage, "Enviando pedido a Google Sheets...");
 
-    const result = await submitOrder(payload);
-    const orderId = result.id || result.ID || result.pedidoId || "sin ID";
+    const result = await submitOrderToSheet(sheetPayload);
+    if (result.ok === false) {
+      throw new Error(result.error || "No se pudo guardar el pedido.");
+    }
 
-    setStatus(formMessage, `Pedido realizado con exito. ID del pedido: ${orderId}`, "success");
+    const savedId = result.id || result.referencia || orderId;
+    setStatus(
+      formMessage,
+      `Pedido guardado en la planilla. Referencia: ${savedId}`,
+      "success"
+    );
 
-    const summaryText = buildSummaryText(payload, orderId);
+    const summaryText = buildSummaryText(payload, savedId);
     state.lastSummaryText = summaryText;
     state.lastWhatsAppText = encodeURIComponent(summaryText);
 
@@ -351,6 +619,7 @@ checkoutForm.addEventListener("submit", async (event) => {
     state.cart = {};
     saveCart();
     renderCart();
+    syncProductSelectors();
     closeCheckoutModal();
     checkoutForm.reset();
   } catch (error) {
@@ -384,7 +653,6 @@ function escapeHtml(text) {
     .replaceAll("'", "&#039;");
 }
 
-reloadProductsBtn.addEventListener("click", fetchProducts);
 goToCartBtn.addEventListener("click", () => {
   cartPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -412,4 +680,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderCart();
-fetchProducts();
+loadCatalog();

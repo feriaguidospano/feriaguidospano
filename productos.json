@@ -1,0 +1,374 @@
+{
+  "fecha": "2026-06-03",
+  "moneda": "ARS",
+  "notas_generales": [
+    "EN CASO DE NO QUERER DEJÁ VACÍO O COLOCÁ CERO",
+    "Bolsón Verde: pueden incluir 7 u 8 variedades de estación sujeto a disponibilidad de la cosecha",
+    "Huevos: producidos por gallinas libres de jaulas, agroecológicos, de Arrecifes / Tres Arroyos, Provincia de Buenos Aires",
+    "Zapallo Anco, Zapallo Kabutia y Palta: se venden por unidad, se cobra por peso real",
+    "Palta silvestre: el precio es por kilo, luego se pesa la unidad y se corrige en el pedido",
+    "Todo sujeto a disponibilidad de cosecha"
+  ],
+  "productos": [
+    {
+      "categoria": "Bolsones",
+      "nombre": "Bolsón Verde",
+      "precio": 16000,
+      "unidad": "bolsón",
+      "detalle": "7 u 8 variedades de estación. Variedades actuales: acelga, verdeo, remolacha, espinaca, lechuga criolla/capuchina, zapallo anco, radicheta",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3]
+    },
+    {
+      "categoria": "Bolsones",
+      "nombre": "Bolsón refuerzo de pesadas x 3kg",
+      "precio": 6500,
+      "unidad": "bolsón 3kg",
+      "detalle": "1,5kg papa + 0,5kg cebolla + 1kg batata",
+      "procedencia": null,
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Bolsones",
+      "nombre": "Bolsón de Cítricos agroecológico 3kg",
+      "precio": 7800,
+      "unidad": "bolsón 3kg",
+      "detalle": "1kg naranja + 1kg mandarina + 1kg pomelo",
+      "procedencia": null,
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Huevos",
+      "nombre": "Huevos de campo x 12 unidades",
+      "precio": 7200,
+      "unidad": "docena",
+      "detalle": "Huevos agroecológicos de gallinas libres de jaulas",
+      "procedencia": "Arrecifes / Tres Arroyos, Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Huevos",
+      "nombre": "Huevos de campo x maple",
+      "precio": 14400,
+      "unidad": "maple",
+      "detalle": "Huevos agroecológicos de gallinas libres de jaulas",
+      "procedencia": "Arrecifes / Tres Arroyos, Buenos Aires",
+      "cantidad_opciones": [0]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Zanahoria",
+      "precio": 1600,
+      "unidad": "kilo",
+      "procedencia": "Mendoza",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Lechuga Crespa agroecológica",
+      "precio": 1600,
+      "unidad": "unidad aprox 200/300g",
+      "procedencia": "Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Lechuga Mantecosa agroecológica",
+      "precio": 1500,
+      "unidad": "unidad",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Lechuga Criolla agroecológica",
+      "precio": 1500,
+      "unidad": "unidad",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Lechuga Capuchina agroecológica",
+      "precio": 1600,
+      "unidad": "unidad",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Cebolla",
+      "precio": 2300,
+      "unidad": "kilo",
+      "procedencia": "Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Cebolla Morada",
+      "precio": 3500,
+      "unidad": "kilo",
+      "procedencia": "Mendoza",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Cebolla de Verdeo agroecológica",
+      "precio": 2500,
+      "unidad": "atado aprox 300g",
+      "procedencia": "Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Morrón Rojo agroecológico",
+      "precio": 4200,
+      "unidad": "500g",
+      "procedencia": "Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Morrón Verde agroecológico",
+      "precio": 2600,
+      "unidad": "500g",
+      "procedencia": "Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Morrón Amarillo agroecológico",
+      "precio": 5000,
+      "unidad": "500g",
+      "procedencia": "Corrientes",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Repollitos de Bruselas Agroecológicos",
+      "precio": 9000,
+      "unidad": "bandeja 400g",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Ajo agroecológico",
+      "precio": 1100,
+      "unidad": "unidad 60g",
+      "procedencia": "Mendoza",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Batata Boniato agro",
+      "precio": 4800,
+      "unidad": "kilo",
+      "procedencia": "San Pedro",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Batata Morada agro",
+      "precio": 2400,
+      "unidad": "kilo",
+      "procedencia": "San Pedro",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Papa blanca lavada",
+      "precio": 3900,
+      "unidad": "kilo",
+      "procedencia": "Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Papa negra cepillada",
+      "precio": 2200,
+      "unidad": "kilo",
+      "procedencia": "Mendoza",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Zapallo Anco",
+      "precio": 2300,
+      "unidad": "kilo",
+      "detalle": "Se vende por unidad, se cobra por peso",
+      "procedencia": "Mendoza",
+      "cantidad_opciones": [0, 1, 2, 3]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Zapallo Kabutia agroecológico",
+      "precio": 2300,
+      "unidad": "kilo",
+      "detalle": "Se vende por unidad, se cobra por peso",
+      "procedencia": "Delta de Campana",
+      "cantidad_opciones": [0, 1, 2, 3]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Palta silvestre agroecológica",
+      "precio": 6500,
+      "unidad": "kilo",
+      "detalle": "Seleccioná cuántas unidades querés, se ajusta por peso",
+      "procedencia": "Misiones",
+      "cantidad_opciones": [0, 1, 2, 3]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Tomate Perita",
+      "precio": 5200,
+      "unidad": "kilo",
+      "procedencia": "Corrientes",
+      "cantidad_opciones": [0, 1, 2, 3]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Acelga agroecológica",
+      "precio": 2700,
+      "unidad": "atado",
+      "procedencia": "Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Pak choi (acelga china) agroecológico",
+      "precio": 1500,
+      "unidad": "atado",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Jengibre Raíz agroecológico",
+      "precio": 2000,
+      "unidad": "100g",
+      "procedencia": "Misiones",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Cúrcuma raíz agroecológica",
+      "precio": 2000,
+      "unidad": "100g",
+      "procedencia": "Misiones",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Perejil agroecológico",
+      "precio": 1300,
+      "unidad": "unidad aprox 200g",
+      "procedencia": "Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Albahaca agroecológica",
+      "precio": 2700,
+      "unidad": "atado",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Radicheta agroecológica",
+      "precio": 1300,
+      "unidad": "unidad aprox 250g",
+      "procedencia": "Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Achicoria agroecológica",
+      "precio": 1500,
+      "unidad": "atado",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Puerro agroecológico",
+      "precio": 3600,
+      "unidad": "atado aprox 500g",
+      "procedencia": "Familias productoras de PAC - Escobar",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Verduras sueltas",
+      "nombre": "Berenjena negra",
+      "precio": 5700,
+      "unidad": "1kg",
+      "procedencia": "Buenos Aires",
+      "cantidad_opciones": [0, 1, 2, 3, 4]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Mandarina agroecológica",
+      "precio": 1800,
+      "unidad": "kilo",
+      "procedencia": "Familias productoras de PAC - Delta de Campana",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Limón agroecológico",
+      "precio": 3500,
+      "unidad": "kilo",
+      "procedencia": "Familias productoras de PAC - Delta de Campana",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Naranja agroecológica",
+      "precio": 2800,
+      "unidad": "kilo",
+      "procedencia": "Familias productoras de PAC - Delta de Campana",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Pomelo agroecológico",
+      "precio": 4000,
+      "unidad": "kilo",
+      "procedencia": "Tucumán",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Pera Williams Orgánica Certificada",
+      "precio": 5900,
+      "unidad": "kilo",
+      "procedencia": "Río Negro",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Manzana Gala Orgánica Certificada",
+      "precio": 5900,
+      "unidad": "kilo",
+      "procedencia": "Río Negro",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Manzana Verde",
+      "precio": 4800,
+      "unidad": "kilo",
+      "procedencia": "Río Negro",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    },
+    {
+      "categoria": "Frutas sueltas",
+      "nombre": "Banana",
+      "precio": 2700,
+      "unidad": "kilo",
+      "procedencia": "Misiones",
+      "cantidad_opciones": [0, 1, 2, 3, 4, 5]
+    }
+  ]
+}

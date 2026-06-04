@@ -30,10 +30,11 @@
         <section class="panel products-panel">
           <div class="panel-header">
             <h2>Productos disponibles</h2>
-            <button id="reloadProductsBtn" class="ghost-btn" type="button">Recargar</button>
+            <p id="catalogDate" class="catalog-date"></p>
           </div>
           <div id="productsStatus" class="status" role="status"></div>
-          <div id="productsGrid" class="products-grid" aria-live="polite"></div>
+          <div id="catalogNotes" class="catalog-notes" hidden></div>
+          <div id="productsGrid" class="products-catalog" aria-live="polite"></div>
         </section>
 
         <aside class="panel cart-panel" id="cartPanel">
@@ -103,6 +104,12 @@
         </form>
       </section>
     </div>
+
+    <input id="catalogFileInput" type="file" accept=".json,application/json" hidden />
+    <form id="sheetsForm" method="POST" action="" target="sheetsFrame" hidden>
+      <input type="hidden" name="payload" id="sheetsPayload" value="" />
+    </form>
+    <iframe id="sheetsFrame" name="sheetsFrame" title="Envio a Google Sheets" hidden></iframe>
 
     <script src="script.js"></script>
   </body>
